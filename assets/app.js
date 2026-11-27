@@ -1,5 +1,6 @@
+const SITE=({'poetry-journey':{ls:'poetryJourneyV1',cn:'poetry-offline',sets:['poetry','intensive','analysis','grammar','all']},'learn-tefl':{ls:'learnTeflV1',cn:'tefl-offline',sets:['all']},'tefl-practical':{ls:'learnTeflPracticalV1',cn:'tefl2-offline',sets:['all']}})[location.pathname.split('/')[1]]||{ls:'poetryJourneyV1',cn:'poetry-offline',sets:['poetry','intensive','analysis','grammar','all']};
 // رحلة الشعر الإنجليزي — progress + gamification (local, private draft)
-const LS_KEY = 'learnTeflPracticalV1';
+const LS_KEY = SITE.ls;
 function state(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||{done:{},xp:0,answers:{}}}catch(e){return{done:{},xp:0,answers:{}}} }
 function dayKey(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function touchStreak(s){ const t=dayKey(), y=dayKey(new Date(Date.now()-864e5)); const k=s.streak||(s.streak={n:0,last:'',best:0});

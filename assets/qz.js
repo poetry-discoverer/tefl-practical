@@ -1,3 +1,4 @@
+const SITE=({'poetry-journey':{ls:'poetryJourneyV1',cn:'poetry-offline',sets:['poetry','intensive','analysis','grammar','all']},'learn-tefl':{ls:'learnTeflV1',cn:'tefl-offline',sets:['all']},'tefl-practical':{ls:'learnTeflPracticalV1',cn:'tefl2-offline',sets:['all']}})[location.pathname.split('/')[1]]||{ls:'poetryJourneyV1',cn:'poetry-offline',sets:['poetry','intensive','analysis','grammar','all']};
 (function(){
 const PAGE=document.body.dataset.page, root=document.getElementById('qz'), BANK=window.BANK||[];
 const DAY=864e5, byId={}; BANK.forEach(b=>byId[b.id]=b);
@@ -61,7 +62,7 @@ function exam(set,pool,full){ const n=full?pool.length:Math.min(20,pool.length),
   show(); }
 function practiceList(k){ const d=due(), inP=d.filter(b=>k==='all'||b.c===k), ids={}; inP.forEach(b=>ids[b.id]=1); return shuf(inP).concat(shuf(pool(k)).filter(b=>!ids[b.id])); }
 function pool(set){ return set==='all'?BANK:BANK.filter(b=>b.c===set); }
-function examHome(){ const s=S(); const sets=["all"];
+function examHome(){ const s=S(); const sets=SITE.sets;
   let h='<div class="lesson-head"><div class="emoji"><span class="em">📝</span></div><h1>الامتحانات</h1><p style="color:var(--ink-soft)">تدريب بتصحيح فوري وشرح لكل إجابة، أو امتحان تجريبي بوقت. نتيجتك بتتحفظ.</p></div>';
   sets.forEach(k=>{ const n=pool(k).length, r=s.exams[k]; const en=Math.min(20,n);
     h+='<div class="plan-card" style="margin-bottom:14px"><h2 style="margin:0 0 6px">'+NAMES[k]+'</h2><p style="color:#666;margin:0 0 12px">'+n+' سؤال'+(r?' · آخر نتيجة '+r.last+'% · أفضل '+r.best+'%':'')+'</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="pl-next" style="flex:1;min-width:140px" data-m="p" data-k="'+k+'">تدريب</button><button class="pl-next" style="flex:1;min-width:140px;background:#1cb0f6;box-shadow:0 6px 0 #1899d6" data-m="e" data-k="'+k+'">امتحان تجريبي · '+en+' سؤال · '+Math.round(en*45/60)+' دقيقة</button></div></div>'; });
