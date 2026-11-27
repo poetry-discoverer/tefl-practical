@@ -216,3 +216,4 @@ a,a:visited,a:hover,a:focus{color:#0b6fa8}
 .pdf-link,.pdf-link.course-pdf{max-width:100%;box-sizing:border-box;white-space:normal;text-align:center;overflow-wrap:anywhere;line-height:1.5}
 .hero,.hero>*{min-width:0}
 .logo .owl.img{background:none;box-shadow:none;overflow:visible}.logo .owl.img img{width:100%;height:100%;display:block;border-radius:12px}
+@media(max-width:480px){.topbar .logo{white-space:nowrap!important;font-size:.95rem!important}.topbar .wrap{flex-wrap:nowrap!important;gap:6px!important}.pill.streak{font-size:0!important;padding:6px 9px!important}.pill.streak .em{font-size:1rem}.stats{gap:5px!important;flex:none}.topbar .wrap>.stats{flex:none}}
