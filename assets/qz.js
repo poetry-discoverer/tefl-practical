@@ -1,4 +1,3 @@
-const SITE=({'poetry-journey':{ls:'poetryJourneyV1',cn:'poetry-offline',sets:['poetry','intensive','analysis','grammar','all']},'learn-tefl':{ls:'learnTeflV1',cn:'tefl-offline',sets:['all']},'tefl-practical':{ls:'learnTeflPracticalV1',cn:'tefl2-offline',sets:['all']}})[location.pathname.split('/')[1]]||{ls:'poetryJourneyV1',cn:'poetry-offline',sets:['poetry','intensive','analysis','grammar','all']};
 (function(){
 const PAGE=document.body.dataset.page, root=document.getElementById('qz'), BANK=window.BANK||[];
 const DAY=864e5, byId={}; BANK.forEach(b=>byId[b.id]=b);
