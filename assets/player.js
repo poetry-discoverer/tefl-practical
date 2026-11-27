@@ -132,7 +132,15 @@ function review(){
   }
   one(); scrollTo(0,0);
 }
-function render(){
+function render(){ render0(); try{ addRev(); }catch(e){} }
+function addRev(){ const cur=S[idx]; if(!cur||['mc','tf','recall','write'].indexOf(cur.t)<0||!document.getElementById('plc')) return;
+  const b=document.createElement('button'); b.className='pl-btn2'; b.id='plrev'; b.type='button'; b.style.cssText='margin:10px auto 0;display:block'; b.textContent='📖 ارجع لنص الدرس';
+  const host=document.getElementById('plc'); host.appendChild(b);
+  b.onclick=()=>{ if(document.getElementById('plrevbox')) return; const o=document.createElement('div'); o.id='plrevbox'; o.setAttribute('role','dialog'); o.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center';
+    let body=''; for(let i=0;i<idx;i++){ const x=S[i]; if(x.t==='section') body+='<h3 style="margin:16px 0 6px;color:#58a700">'+x.h.replace(/^(<span class="em">.*?<\/span>\s*)+/,'')+'</h3>'; else if(x.t==='learn') body+='<div class="pl-text" style="margin:0 0 12px;padding:10px 12px;border:1px solid #e5e5e5;border-radius:14px">'+x.h+'</div>'; }
+    o.innerHTML='<div style="background:#fff;width:100%;max-width:680px;max-height:86vh;overflow:auto;border-radius:22px 22px 0 0;padding:16px 16px 24px;direction:rtl"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="font-size:1.1rem">📖 نص الدرس لحد هنا</b><button type="button" class="pl-btn2" id="plrevx" style="margin:0">رجوع للسؤال ✖</button></div>'+(body||'<div class="u">لسه ما فيش نص قبل السؤال ده.</div>')+'</div>';
+    document.body.appendChild(o); const close=()=>{ o.remove(); }; document.getElementById('plrevx').onclick=close; o.addEventListener('click',e=>{ if(e.target===o) close(); }); }; }
+function render0(){
   stopAudio();
   if(S[idx].t==='end'&&missed.length&&!reviewed){ review(); return; }
   const s=S[idx]; const pct=Math.round(idx/(S.length-1)*100);
