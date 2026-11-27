@@ -133,7 +133,7 @@ function review(){
   one(); scrollTo(0,0);
 }
 function render(){ render0(); try{ addRev(); }catch(e){} }
-function addRev(){ const cur=S[idx]; if(!cur||['mc','tf','recall','write'].indexOf(cur.t)<0||!document.getElementById('plc')) return;
+function addRev(){ const cur=S[idx]; if(cur&&cur.t==='learn'&&idx>0&&document.getElementById('plc')){ const r=document.createElement('button'); r.className='pl-btn2'; r.type='button'; r.id='plrestart'; r.style.cssText='margin:10px auto 0;display:block'; r.textContent='🔁 أعيد الدرس من الأول'; r.onclick=()=>{ idx=0; back=false; render(); window.scrollTo(0,0); }; document.getElementById('plc').appendChild(r); return; } if(!cur||['mc','tf','recall','write'].indexOf(cur.t)<0||!document.getElementById('plc')) return;
   const b=document.createElement('button'); b.className='pl-btn2'; b.id='plrev'; b.type='button'; b.style.cssText='margin:10px auto 0;display:block'; b.textContent='📖 ارجع لنص الدرس';
   const host=document.getElementById('plc'); host.appendChild(b);
   b.onclick=()=>{ if(document.getElementById('plrevbox')) return; const o=document.createElement('div'); o.id='plrevbox'; o.setAttribute('role','dialog'); o.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center';
