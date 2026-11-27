@@ -164,34 +164,7 @@ return C})();
 
 ;(function(){try{var s=document.currentScript;if(!s)return;var b=s.src.replace(/app\.js.*$/,'');var l=document.createElement('link');l.rel='stylesheet';l.href=b+'search.css';document.head.appendChild(l);var j=document.createElement('script');j.src=b+'search.js';document.head.appendChild(j)}catch(e){}})();
 
-/* per-lesson audio download: joins the lesson clips in order in the browser (no extra files on the server) */
-(function(){
-  function mk(a){
-    var m=a.getAttribute('href').match(/pdf\/([a-z0-9-]+)\.pdf$/); if(!m||/^(summary|course)/.test(m[1])||a.dataset.aud) return;
-    a.dataset.aud='1'; var id=m[1];
-    var b=document.createElement('button'); b.type='button'; b.className='pdf-link aud-link'; b.textContent='🎧 حمّل صوت الدرس MP3';
-    b.style.cssText='cursor:pointer;font-family:inherit;font-size:inherit;margin-inline-start:8px';
-    b.onclick=async function(){
-      if(b.disabled) return; b.disabled=true; var old=b.textContent, parts=[], n=1;
-      try{
-        for(;;n++){
-          var u='../audio/'+id+'-'+String(n).padStart(3,'0')+'.mp3';
-          var r=await fetch(u); if(!r.ok) break;
-          parts.push(await r.blob()); b.textContent='⏳ جاري التجهيز… '+n;
-        }
-        if(!parts.length){ b.textContent='الصوت مش متاح دلوقتي'; setTimeout(function(){b.textContent=old;b.disabled=false;},2500); return; }
-        var blob=new Blob(parts,{type:'audio/mpeg'}), url=URL.createObjectURL(blob), d=document.createElement('a');
-        d.href=url; d.download=id+'-audio.mp3'; document.body.appendChild(d); d.click(); d.remove();
-        setTimeout(function(){URL.revokeObjectURL(url)},60000);
-        b.textContent='✅ اتحمّل'; setTimeout(function(){b.textContent=old;b.disabled=false;},3000);
-      }catch(e){ b.textContent='حصلت مشكلة، جرّب تاني'; setTimeout(function(){b.textContent=old;b.disabled=false;},2500); }
-    };
-    a.insertAdjacentElement('afterend',b);
-  }
-  function run(){ document.querySelectorAll('a.pdf-link[href^="../pdf/"]').forEach(mk); }
-  if(document.readyState!=='loading') run(); else document.addEventListener('DOMContentLoaded',run);
-  setTimeout(run,1500);
-})();
+/* per-lesson full MP3 is a static file linked under the PDF button (mp3-link) */
 
 /* update banner: when a newer version of the app is installed, offer one tap to reload */
 (function(){
