@@ -141,7 +141,7 @@ function render(){
   h+='<div class="pl-card'+(back?' back':'')+(s.t==='section'?' pl-section':'')+(s.t==='end'?' pl-end':'')+'" id="plc">';
   const nxt='<div class="pl-nav">'+(idx>0&&s.t!=='end'?'<button class="pl-back" aria-label="رجوع">→</button>':'')+'<button class="pl-next" id="plnext">التالي</button></div>';
   if(s.t==='learn'){ h+=audioBox(s.a)+'<div class="pl-text">'+s.h+'</div>'+nxt; }
-  else if(s.t==='section'){ h+='<div class="big">📄</div><h2>'+s.h.replace(/^(<span class="em">.*?<\/span>\s*)+/,'')+'</h2>'+nxt; }
+  else if(s.t==='section'){ h+='<div class="big">'+(((document.querySelector('.lesson-head .emoji .em')||{}).textContent||'').trim()||'📄')+'</div><h2>'+s.h.replace(/^(<span class="em">.*?<\/span>\s*)+/,'')+'</h2>'+nxt; }
   else if(s.t==='mc'||s.t==='tf'){
     h+='<div class="pl-q">'+s.q+'</div>';
     const opts=s.t==='tf'?['صح ✅','غلط ❌']:s.opts;
