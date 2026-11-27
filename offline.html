@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الدروس المتحملة | Learn TEFL</title>
+<link rel="stylesheet" href="assets/style.css"><link rel="stylesheet" href="assets/player.css">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#58cc02">
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<header class="topbar"><div class="wrap">
+  <a class="logo" href="index.html"><span class="owl img"><img src="assets/icons/logo-128.png" alt="" width="50" height="50"></span> Learn TEFL</a>
+  <div class="stats">
+    <span class="pill xp"><span class="em">⭐</span> <span class="xp-val">0</span></span>
+    <span class="pill streak"><span class="em">🔥</span> استمر!</span>
+  </div>
+</div></header>
+<main class="wrap">
+<div class="lesson-head"><div class="emoji"><span class="em">📥</span></div><h1>الدروس المتحملة</h1>
+<p style="color:var(--ink-soft)">الدروس اللي نزّلتها على جهازك. بتفتح وبتشتغل بالصوت من غير نت.</p></div>
+<div id="net" style="text-align:center;font-weight:800;margin-bottom:14px"></div>
+<div id="list"></div>
+<div id="empty" class="plan-card" style="display:none"><h2 style="margin-top:0">لسه مفيش دروس متحملة</h2><p style="color:#777">افتح أي درس واضغط «⬇️ حمّل الدرس للأوفلاين»، وهيظهر هنا.</p><a class="btn" href="index.html">ارجع للرئيسية</a></div>
+</main>
+<footer class="footer">دروس جديدة بتتضاف باستمرار <span class="em">💚</span></footer>
+<script src="assets/app.js"></script>
+<script src="assets/titles.js"></script>
+<script src="audio/manifest.js"></script>
+<script>
+(function(){
+const CN='tefl-offline',M=window.AUDIO_MANIFEST||{audio:{},pdf:{}},TT=window.TITLES||{};
+const fmt=n=>(n/1048576).toFixed(1)+' MB';
+function pageUrl(id){return new URL('lessons/'+id+'.html',location.href).pathname}
+function urls(id){const u=[pageUrl(id)];const p=M.pdf&&M.pdf[id];if(p)u.push(new URL('pdf/'+p,location.href).pathname);
+ Object.keys(M.audio||{}).forEach(k=>{if(k.indexOf(id+'-')===0&&!/^data:/.test(M.audio[k]))u.push(new URL('audio/'+M.audio[k],location.href).pathname)});return u}
+function netMsg(){const n=document.getElementById('net');n.textContent=navigator.onLine?'':'📴 إنت أوفلاين دلوقتي، والدروس دي شغالة عادي';n.style.color='#b36b00'}
+addEventListener('online',netMsg);addEventListener('offline',netMsg);netMsg();
+async function paint(){
+ const q=state(),off=q.off||{},ids=Object.keys(off);const L=document.getElementById('list');L.innerHTML='';
+ document.getElementById('empty').style.display=ids.length?'none':'block';
+ let c=null;try{c=await caches.open(CN)}catch(e){}
+ ids.sort((a,b)=>(q.last&&q.last.id===a?-1:0)-(q.last&&q.last.id===b?-1:0));
+ for(const id of ids){
+  const ok=c?!!(await c.match(pageUrl(id))):true;
+  const d=document.createElement('div');d.className='node-row fade in';d.style.cursor='default';
+  const done=q.done&&q.done[id];
+  d.innerHTML='<a class="node'+(done?' done':'')+'" href="lessons/'+id+'.html"><span class="em">'+(done?'✅':'📥')+'</span></a><div class="node-label">'+(TT[id]||id)+'<small>'+fmt(off[id])+(ok?' · جاهز للأوفلاين':' · الملفات ناقصة، حمّله تاني من الدرس')+'</small></div>';
+  const b=document.createElement('button');b.className='pdf-link';b.textContent='🗑️';b.title='احذف';b.style.cssText='cursor:pointer;font-family:inherit;font-size:1.3rem;padding:10px 14px';
+  b.onclick=async()=>{if(!confirm('تحذف الدرس ده من الدروس المتحملة؟'))return;const cc=await caches.open(CN);for(const u of urls(id))await cc.delete(u);const s=state();delete s.off[id];save(s);paint()};
+  d.appendChild(b);
+  d.addEventListener('click',e=>{if(e.target.closest('button'))return;location.href='lessons/'+id+'.html'});d.style.cursor='pointer';
+  L.appendChild(d);
+ }
+}
+paint();
+})();
+</script>
+<script>if("serviceWorker"in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js")})</script></body></html>

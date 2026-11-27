@@ -1,0 +1,1 @@
+window.MODTESTS={};window.MODPRACT={};

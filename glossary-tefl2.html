@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مصطلحات TEFL | Learn TEFL</title>
+<link rel="stylesheet" href="assets/style.css"><link rel="stylesheet" href="assets/player.css">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#58cc02"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Learn TEFL"><link rel="apple-touch-icon" href="assets/icons/logo-180.png"><link rel="icon" href="assets/icons/logo-32.png" type="image/png" sizes="32x32"><link rel="shortcut icon" href="favicon.ico"></head>
+<body>
+<canvas id="confetti"></canvas>
+<header class="topbar"><div class="wrap">
+  <a class="logo" href="index.html"><span class="owl img"><img src="assets/icons/logo-128.png" alt="" width="50" height="50"></span> Learn TEFL</a>
+  <div class="stats">
+    <span class="pill xp"><span class="em">⭐</span> <span class="xp-val">0</span></span>
+    <span class="pill streak"><span class="em">🔥</span> استمر!</span>
+  </div>
+</div></header>
+<main class="wrap"><div class="lesson-head"><div class="emoji"><span class="em">📖</span></div><h1>مصطلحات TEFL العملي</h1><p style="color:var(--ink-soft)">كل مصطلح بمعناه المختصر، ورابط يفتحلك الدرس اللي بيشرحه بالتفصيل.</p></div>
+<input id="q" type="search" placeholder="دوّر على مصطلح (بالإنجليزي أو بالعربي)" style="width:100%;font-size:20px;padding:14px 16px;border:2px solid #e5e5e5;border-radius:16px;margin-bottom:16px;font-family:inherit"><div id="list"></div>
+</main>
+<footer class="footer">دروس جديدة بتتضاف باستمرار <span class="em">💚</span></footer>
+<script src="assets/app.js"></script><script src="assets/glossary-tefl2.js"></script><script>
+(function(){var G=window.GLOSSARY,L=document.getElementById("list"),Q=document.getElementById("q");function esc(s){return s.replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}
+function draw(){var q=Q.value.trim().toLowerCase(),cats=[],by={};G.filter(function(e){return!q||e.t.toLowerCase().indexOf(q)>-1||e.a.indexOf(q)>-1||e.d.indexOf(q)>-1||(e.e||'').toLowerCase().indexOf(q)>-1}).forEach(function(e){if(!by[e.c]){by[e.c]=[];cats.push(e.c)}by[e.c].push(e)});
+var h="";cats.forEach(function(c){h+='<h2 style="margin:22px 0 10px">'+c+'</h2>';by[c].sort(function(a,b){return a.t<b.t?-1:1}).forEach(function(e){h+='<div class="plan-card" style="margin-bottom:12px"><div style="font-weight:900;font-size:22px;direction:ltr;text-align:start">'+esc(e.t)+' <span style="font-size:17px;color:#777;direction:rtl;unicode-bidi:isolate">· '+e.a+'</span></div><div style="font-size:19px;line-height:1.8;margin:6px 0 10px">'+e.d+'</div>'+(e.e?'<div class="en" dir="ltr">'+e.e+'</div>':'')+'<a href="lessons/'+e.l+'.html?card='+e.k+'" style="font-weight:900;color:#0b6fa8">📖 شوف الشرح في الدرس</a></div>'})});
+L.innerHTML=h||'<p style="text-align:center;color:#777">مفيش مصطلح بالاسم ده.</p>'}Q.oninput=draw;draw()})()</script>
+<script>if("serviceWorker"in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js")})</script></body></html>
