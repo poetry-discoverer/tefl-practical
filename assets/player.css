@@ -104,3 +104,7 @@
 .pl-spds{display:flex;gap:6px;direction:ltr;width:100%;justify-content:center;margin-top:8px}
 .pl-spds .pl-spd{flex:1;max-width:72px;padding:7px 4px;font-size:14px}
 .pl-spds .pl-spd.on{border-color:#1cb0f6;background:#eaf7ff;color:#0b6fa8}
+
+.pl-top .pl-bar{height:24px;cursor:pointer;touch-action:none;position:relative}
+.pl-top .pl-bar:focus-visible{outline:3px solid #1cb0f6}
+.pl-top .pl-count{padding:6px 8px;border-radius:10px;background:#f1f1f1;text-decoration:underline dotted}

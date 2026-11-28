@@ -163,7 +163,19 @@ function review(){
   }
   one(); scrollTo(0,0);
 }
-function render(){ render0(); try{ addRev(); }catch(e){} }
+function wireBar(){ const bar=document.querySelector('.pl-top .pl-bar'), cnt=document.querySelector('.pl-top .pl-count'); if(!bar||!cnt||S.length<2) return; const fill=bar.querySelector('i'); let drag=false, tgt=idx;
+  const pos=ev=>{ const r=bar.getBoundingClientRect(); let p=(ev.clientX-r.left)/r.width; if(document.documentElement.dir==='rtl'||getComputedStyle(bar).direction==='rtl') p=1-p; p=Math.max(0,Math.min(1,p)); return Math.round(p*(S.length-1)); };
+  const show=n=>{ tgt=n; if(fill){ fill.style.transition='none'; fill.style.width=Math.round(n/(S.length-1)*100)+'%'; } cnt.textContent=(n+1)+' / '+S.length; };
+  const go=n=>{ if(n===idx) return; idx=n; back=false; render(); scrollTo(0,0); };
+  bar.setAttribute('role','slider'); bar.tabIndex=0; bar.setAttribute('aria-label','انتقل لكارت');
+  bar.onpointerdown=ev=>{ drag=true; try{ bar.setPointerCapture(ev.pointerId); }catch(e){} show(pos(ev)); ev.preventDefault(); };
+  bar.onpointermove=ev=>{ if(drag) show(pos(ev)); };
+  bar.onpointerup=ev=>{ if(!drag) return; drag=false; go(pos(ev)); };
+  bar.onpointercancel=()=>{ drag=false; show(idx); };
+  bar.onkeydown=ev=>{ const d=(ev.key==='ArrowRight'||ev.key==='ArrowUp')?1:(ev.key==='ArrowLeft'||ev.key==='ArrowDown')?-1:0; if(d){ go(Math.max(0,Math.min(S.length-1,idx+d))); ev.preventDefault(); } };
+  cnt.style.cursor='pointer'; cnt.onclick=()=>{ const v=prompt('اكتب رقم الكارت (1 - '+S.length+')',idx+1); const n=parseInt(String(v||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)),10); if(n>=1&&n<=S.length) go(n-1); };
+}
+function render(){ render0(); try{ addRev(); }catch(e){} try{ wireBar(); }catch(e){} }
 function addRev(){ const cur=S[idx]; if(cur&&cur.t==='learn'&&idx>0&&document.getElementById('plc')){ const r=document.createElement('button'); r.className='pl-btn2'; r.type='button'; r.id='plrestart'; r.style.cssText='margin:10px auto 0;display:block'; r.textContent='🔁 أعيد الدرس من الأول'; r.onclick=()=>{ idx=0; back=false; render(); window.scrollTo(0,0); }; document.getElementById('plc').appendChild(r); return; } if(!cur||['mc','tf','recall','write'].indexOf(cur.t)<0||!document.getElementById('plc')) return;
   const b=document.createElement('button'); b.className='pl-btn2'; b.id='plrev'; b.type='button'; b.style.cssText='margin:10px auto 0;display:block'; b.textContent='📖 ارجع لنص الدرس';
   const host=document.getElementById('plc'); host.appendChild(b);
