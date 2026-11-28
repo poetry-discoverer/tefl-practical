@@ -197,7 +197,7 @@ var P=['🎉 برافو عليك!','👏 شغل ممتاز!','🔥 كمّل كد
 function base(){return location.pathname.indexOf('/lessons/')>-1?'../':''}
 function st(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{}}catch(e){return {}}}
 function tgt(x){var n=(Math.floor((x||0)/TG)+1)*TG;document.querySelectorAll('.pill.xp').forEach(function(p){var t=p.querySelector('.tgt');if(!t){t=document.createElement('span');t.className='tgt';p.appendChild(t)}t.textContent='🎯'+n;t.title='الهدف الجاي: '+n+' نقطة'})}
-function snd(){try{if(window.CHIP&&CHIP.on&&!CHIP.on())return;var n=1+Math.floor(Math.random()*8),a=new Audio(base()+'assets/praise/praise-0'+n+'.mp3');a.volume=.9;var p=a.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
+function snd(){try{if(!window.PRAISE_SND)return;if(window.CHIP&&CHIP.on&&!CHIP.on())return;var n=1+Math.floor(Math.random()*8),a=new Audio(base()+'assets/praise/praise-0'+n+'.mp3');a.volume=.9;var p=a.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
 function show(kind,xp){
  if(Date.now()-last<8000)return;last=Date.now();
  var q=Q[Math.floor(Math.random()*Q.length)],h=P[Math.floor(Math.random()*P.length)];
