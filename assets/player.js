@@ -164,8 +164,10 @@ function review(){
   one(); scrollTo(0,0);
 }
 function wireBar(){ const bar=document.querySelector('.pl-top .pl-bar'), cnt=document.querySelector('.pl-top .pl-count'); if(!bar||!cnt||S.length<2) return; const fill=bar.querySelector('i'); let drag=false, tgt=idx;
-  const pos=ev=>{ const r=bar.getBoundingClientRect(); let p=(ev.clientX-r.left)/r.width; if(document.documentElement.dir==='rtl'||getComputedStyle(bar).direction==='rtl') p=1-p; p=Math.max(0,Math.min(1,p)); return Math.round(p*(S.length-1)); };
-  const show=n=>{ tgt=n; if(fill){ fill.style.transition='none'; fill.style.width=Math.round(n/(S.length-1)*100)+'%'; } cnt.textContent=(n+1)+' / '+S.length; };
+  const pos=ev=>{ const r=bar.getBoundingClientRect(); let p=(ev.clientX-r.left)/r.width; if(document.documentElement.dir==='rtl'||getComputedStyle(bar).direction==='rtl') p=1-p; p=Math.max(0,Math.min(1,p)); return Math.min(S.length-1,Math.floor(p*S.length)); };
+  const N=S.length, K=Math.min(N,30); bar.classList.add('pl-segs'); let hh=''; for(let k=0;k<K;k++) hh+='<b class="pl-seg"></b>'; bar.innerHTML=hh; const segs=[...bar.children];
+  const paint=n=>{ segs.forEach((e,k)=>{ const a=Math.floor(k*N/K), z=Math.floor((k+1)*N/K); e.className='pl-seg'+(z<=n?' done':(a<=n&&n<z?' cur':'')); }); };
+  const show=n=>{ tgt=n; paint(n); cnt.textContent=(n+1)+' / '+S.length; }; paint(idx);
   const go=n=>{ if(n===idx) return; idx=n; back=false; render(); scrollTo(0,0); };
   bar.setAttribute('role','slider'); bar.tabIndex=0; bar.setAttribute('aria-label','انتقل لكارت');
   bar.onpointerdown=ev=>{ drag=true; try{ bar.setPointerCapture(ev.pointerId); }catch(e){} show(pos(ev)); ev.preventDefault(); };
