@@ -45,7 +45,7 @@ function a11y(){
 let __a11yT=0; function a11yLater(){ clearTimeout(__a11yT); __a11yT=setTimeout(a11y,60); }
 if(typeof MutationObserver!=='undefined') addEventListener('DOMContentLoaded',()=>{ a11y(); new MutationObserver(a11yLater).observe(document.body,{childList:true,subtree:true}); });
 
-function save(s){ let prev=0; try{ prev=(JSON.parse(localStorage.getItem(LS_KEY))||{}).xp||0 }catch(e){} if((s.xp||0)>prev){ touchStreak(s); dailyAdd(s,(s.xp||0)-prev); } awardBadges(s); localStorage.setItem(LS_KEY, JSON.stringify(s)); }
+function save(s){ let prev=0,pst=null; try{ pst=JSON.parse(localStorage.getItem(LS_KEY))||{}; prev=pst.xp||0 }catch(e){} try{ window.PRAISE&&window.PRAISE(pst||{},s) }catch(e){} if((s.xp||0)>prev){ touchStreak(s); dailyAdd(s,(s.xp||0)-prev); } awardBadges(s); localStorage.setItem(LS_KEY, JSON.stringify(s)); }
 function isDone(id){ return !!state().done[id]; }
 
 function refreshHeader(){
@@ -180,4 +180,40 @@ return C})();
     document.body.appendChild(b);
   });
   try{ navigator.serviceWorker.getRegistration().then(function(r){ if(r) r.update(); }); }catch(e){}
+})();
+
+;(function(){
+var TG=50,last=0;
+var Q=[
+["A journey of a thousand miles begins with a single step.","رحلة الألف ميل بتبدأ بخطوة واحدة.","Lao Tzu"],
+["Genius is one per cent inspiration, ninety-nine per cent perspiration.","العبقرية واحد في المية إلهام وتسعة وتسعين في المية عرق وشغل.","Thomas Edison"],
+["Education is the most powerful weapon which you can use to change the world.","التعليم أقوى سلاح تقدر تغيّر بيه العالم.","Nelson Mandela"],
+["The beautiful thing about learning is that no one can take it away from you.","أجمل حاجة في التعلم إن محدش يقدر ياخده منك.","B. B. King"],
+["The more that you read, the more things you will know. The more that you learn, the more places you'll go.","كل ما تقرا أكتر هتعرف حاجات أكتر، وكل ما تتعلم أكتر هتروح أماكن أكتر.","Dr. Seuss"],
+["Fall seven times, stand up eight.","وقع سبع مرات، وقف تمانية.","Japanese proverb"],
+["Success is the sum of small efforts, repeated day in and day out.","النجاح هو مجموع مجهودات صغيرة بتتكرر كل يوم.","Robert Collier"],
+["He who strives, finds.","من جدّ وجد.","مثل عربي"]];
+var P=['🎉 برافو عليك!','👏 شغل ممتاز!','🔥 كمّل كده!','⭐ أحسنت!'];
+function base(){return location.pathname.indexOf('/lessons/')>-1?'../':''}
+function st(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{}}catch(e){return {}}}
+function tgt(x){var n=(Math.floor((x||0)/TG)+1)*TG;document.querySelectorAll('.pill.xp').forEach(function(p){var t=p.querySelector('.tgt');if(!t){t=document.createElement('span');t.className='tgt';p.appendChild(t)}t.textContent='🎯'+n;t.title='الهدف الجاي: '+n+' نقطة'})}
+function snd(){try{if(window.CHIP&&CHIP.on&&!CHIP.on())return;var n=1+Math.floor(Math.random()*8),a=new Audio(base()+'assets/praise/praise-0'+n+'.mp3');a.volume=.9;var p=a.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
+function show(kind,xp){
+ if(Date.now()-last<8000)return;last=Date.now();
+ var q=Q[Math.floor(Math.random()*Q.length)],h=P[Math.floor(Math.random()*P.length)];
+ var msg=kind==='lesson'?'خلّصت الدرس! 🏁':kind==='exam'?'خلّصت الامتحان! 📝':'وصلت '+xp+' نقطة! 🎯';
+ var d=document.createElement('div');d.className='praise';d.setAttribute('role','status');d.setAttribute('aria-live','polite');
+ d.innerHTML='<button type="button" class="px" aria-label="إغلاق">×</button><div class="ph">'+h+'</div><div class="pm">'+msg+'</div><div class="pq" dir="ltr">“'+q[0]+'”</div><div class="pa">'+q[1]+'</div><div class="pw">— '+q[2]+'</div>';
+ var conf=document.createElement('div');conf.className='pconf';conf.setAttribute('aria-hidden','true');
+ ['🎉','⭐','✨','🎊','🌟','💫'].forEach(function(e,i){for(var j=0;j<2;j++){var s=document.createElement('span');s.textContent=e;s.style.left=(8+((i*2+j)*7.5))+'%';s.style.animationDelay=(j*.12+i*.05)+'s';conf.appendChild(s)}});
+ document.body.appendChild(conf);document.body.appendChild(d);
+ var rm=function(){try{d.remove();conf.remove()}catch(e){}};d.querySelector('.px').onclick=rm;setTimeout(rm,6500);snd();}
+window.PRAISE=function(p,s){
+ try{tgt(s.xp);
+ var kd=Object.keys(s.done||{}).length>Object.keys(p.done||{}).length;
+ var ke=JSON.stringify(s.exams||{})!==JSON.stringify(p.exams||{})&&Object.keys(s.exams||{}).length>=Object.keys(p.exams||{}).length&&Object.keys(s.exams||{}).length>0;
+ var km=Math.floor((s.xp||0)/TG)>Math.floor((p.xp||0)/TG)&&(s.xp||0)>(p.xp||0);
+ if(kd)show('lesson');else if(ke)show('exam');else if(km)show('points',Math.floor(s.xp/TG)*TG);}catch(e){}};
+function r(){tgt(st().xp)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',r);else r();
 })();
