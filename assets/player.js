@@ -164,9 +164,9 @@ function review(){
   one(); scrollTo(0,0);
 }
 function wireBar(){ const bar=document.querySelector('.pl-top .pl-bar'), cnt=document.querySelector('.pl-top .pl-count'); if(!bar||!cnt||S.length<2) return; const fill=bar.querySelector('i'); let drag=false, tgt=idx;
-  const pos=ev=>{ const r=bar.getBoundingClientRect(); let p=(ev.clientX-r.left)/r.width; if(document.documentElement.dir==='rtl'||getComputedStyle(bar).direction==='rtl') p=1-p; p=Math.max(0,Math.min(1,p)); return Math.min(S.length-1,Math.floor(p*S.length)); };
-  const N=S.length, K=Math.min(N,30); bar.classList.add('pl-segs'); let hh=''; for(let k=0;k<K;k++) hh+='<b class="pl-seg"></b>'; bar.innerHTML=hh; const segs=[...bar.children];
-  const paint=n=>{ segs.forEach((e,k)=>{ const a=Math.floor(k*N/K), z=Math.floor((k+1)*N/K); e.className='pl-seg'+(z<=n?' done':(a<=n&&n<z?' cur':'')); }); };
+  const pos=ev=>{ const e=document.elementFromPoint(ev.clientX,ev.clientY); const sg=e&&e.closest&&e.closest('.pl-seg'); if(sg&&bar.contains(sg)) return segs.indexOf(sg); let best=tgt,bd=1e9; segs.forEach((x,k)=>{ const r=x.getBoundingClientRect(); const d=Math.hypot(ev.clientX-(r.left+r.width/2),ev.clientY-(r.top+r.height/2)); if(d<bd){ bd=d; best=k; } }); return best; };
+  const N=S.length, K=N; bar.classList.add('pl-segs'); let hh=''; for(let k=0;k<K;k++) hh+='<b class="pl-seg"><span class="pl-num">'+(k+1)+'</span></b>'; bar.innerHTML=hh; const segs=[...bar.children];
+  const paint=n=>{ segs.forEach((e,k)=>{ e.className='pl-seg'+(k<n?' done':(k===n?' cur':'')); }); const c=segs[n]; if(c&&bar.scrollHeight>bar.clientHeight){ bar.scrollTop=Math.max(0,c.offsetTop-bar.clientHeight/2+c.offsetHeight/2); } };
   const show=n=>{ tgt=n; paint(n); cnt.textContent=(n+1)+' / '+S.length; }; paint(idx);
   const go=n=>{ if(n===idx) return; idx=n; back=false; render(); scrollTo(0,0); };
   bar.setAttribute('role','slider'); bar.tabIndex=0; bar.setAttribute('aria-label','انتقل لكارت');

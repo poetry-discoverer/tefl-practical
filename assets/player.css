@@ -113,3 +113,11 @@
 .pl-seg{flex:1;min-width:0;border-radius:4px;background:#e5e5e5;transition:background .2s,transform .2s}
 .pl-seg.done{background:#58cc02;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
 .pl-seg.cur{background:#1cb0f6;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);transform:scaleY(1.25)}
+
+.pl-top{flex-wrap:wrap}
+.pl-top .pl-bar.pl-segs{order:5;flex:1 1 100%;display:flex;flex-wrap:wrap;gap:4px;height:auto;max-height:112px;overflow-y:auto;overflow-x:hidden;position:relative;padding:2px 1px;direction:rtl;scrollbar-width:thin;margin-top:8px}
+.pl-seg{flex:0 0 auto;width:34px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-weight:800;font-size:14px;color:#777;direction:ltr;user-select:none}
+.pl-seg .pl-num{pointer-events:none}
+.pl-seg.done{color:#fff}
+.pl-seg.cur{color:#fff;transform:none;outline:3px solid #bfe6fb}
+.pl-top{position:static!important}
