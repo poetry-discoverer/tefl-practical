@@ -97,7 +97,7 @@ function playClip(id,card){
 }
 function audioBox(id){
   if(!hasClip(id)) return '';
-  return '<div class="pl-audio pl-yt"><div class="pl-row"><button class="pl-skip" data-d="-5" aria-label="رجوع ٥ ثواني">⏪ 5</button><button class="pl-play" aria-label="تشغيل">▶</button><button class="pl-skip" data-d="5" aria-label="تقدّم ٥ ثواني">5 ⏩</button><button class="pl-spd">'+(speed===1?'1':speed)+'×</button><button class="pl-ar" aria-label="روح للنص العربي">عربي ⬇</button></div><div class="pl-seekrow"><span class="pl-t pl-cur">0:00</span><div class="pl-wave pl-track" role="slider" aria-label="شريط الصوت" tabindex="0"><i></i><b class="pl-knob"></b></div><span class="pl-t pl-dur">--:--</span></div></div>';
+  return '<div class="pl-audio pl-yt"><div class="pl-row"><button class="pl-skip" data-d="-5" aria-label="رجوع ٥ ثواني">⏪ 5</button><button class="pl-skip" data-d="-3" aria-label="رجوع ٣ ثواني">⏪ 3</button><button class="pl-play" aria-label="تشغيل">▶</button><button class="pl-skip" data-d="3" aria-label="تقدّم ٣ ثواني">3 ⏩</button><button class="pl-skip" data-d="5" aria-label="تقدّم ٥ ثواني">5 ⏩</button><button class="pl-spd">'+(speed===1?'1':speed)+'×</button><button class="pl-ar" aria-label="روح للنص العربي">عربي ⬇</button></div><div class="pl-seekrow"><span class="pl-t pl-cur">0:00</span><div class="pl-wave pl-track" role="slider" aria-label="شريط الصوت" tabindex="0"><i></i><b class="pl-knob"></b></div><span class="pl-t pl-dur">--:--</span></div></div>';
 }
 function fmtT(t){ if(!isFinite(t)||t<0) return '--:--'; t=Math.floor(t); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
 function uiTime(card){ if(!card) return; const id=card._aid; const live=A._id===id&&A.duration&&isFinite(A.duration); const d=live?A.duration:(card._dur||0); const c=live?A.currentTime:0;
@@ -110,12 +110,23 @@ function arTarget(card){ const box=card.querySelector('.pl-text'); if(!box) retu
   const sel='.u,.lead,.li,p,li,div'; const all=[...box.querySelectorAll(sel)].filter(e=>!e.querySelector(sel)&&e.textContent.trim().length>2);
   const isAr=e=>{ const t=e.textContent; const a=(t.match(/[\u0600-\u06FF]/g)||[]).length, l=(t.match(/[A-Za-z]/g)||[]).length; return a>l; };
   let seenEn=false; for(const e of all){ if(!isAr(e)) seenEn=true; else if(seenEn) return e; } return null; }
+const AR_RE=/[\u0600-\u06FF]/g, EN_RE=/[A-Za-z]/g;
+function leafBlocks(box){ const sel='.u,.lead,.li,p,li,div'; return [...box.querySelectorAll(sel)].filter(e=>!e.querySelector(sel)&&e.textContent.trim().length>2); }
+function blockLang(e){ const t=e.textContent; const a=(t.match(AR_RE)||[]).length, l=(t.match(EN_RE)||[]).length; return a>l?'ar':'en'; }
+function setupTabs(card){ const box=card&&card.querySelector('.pl-text'); if(!box||card.querySelector('.pl-tabs')) return;
+  const bl=leafBlocks(box); bl.forEach(e=>e.dataset.l=blockLang(e)); const hasAr=bl.some(e=>e.dataset.l==='ar'), hasEn=bl.some(e=>e.dataset.l==='en'); if(!(hasAr&&hasEn)) return;
+  const bar=document.createElement('div'); bar.className='pl-tabs'; bar.innerHTML='<button type="button" class="pl-tab" data-l="en">English</button><button type="button" class="pl-tab" data-l="ar">عربي</button>';
+  box.parentNode.insertBefore(bar,box);
+  const apply=l=>{ bl.forEach(e=>e.classList.toggle('pl-hid',e.dataset.l!==l)); bar.querySelectorAll('.pl-tab').forEach(b=>b.classList.toggle('on',b.dataset.l===l)); };
+  let init=(()=>{ try{ return localStorage.getItem('pltab'); }catch(e){ return null; } })(); if(init!=='ar'&&init!=='en') init=bl[0].dataset.l;
+  apply(init);
+  bar.querySelectorAll('.pl-tab').forEach(b=>{ b.onclick=()=>{ apply(b.dataset.l); try{ localStorage.setItem('pltab',b.dataset.l); }catch(e){} }; }); }
 function wireAudio(card,id){
   const b=card.querySelector('.pl-play'); if(!b) return; const card0=card; card._aid=id;
   try{ const pd=new Audio(); pd.preload='metadata'; pd.src=clipUrl(id); pd.onloadedmetadata=()=>{ if(isFinite(pd.duration)){ card._dur=pd.duration; uiTime(card); } }; }catch(e){}
   card.querySelectorAll('.pl-skip').forEach(k=>{ k.onclick=()=>{ unlocked=true; const base=(A._id===id)?A.currentTime:0; seekTo(card,id,base+(+k.dataset.d)); }; });
   const arb=card.querySelector('.pl-ar'); const tg=arTarget(card);
-  if(arb){ if(!tg) arb.style.display='none'; else arb.onclick=()=>{ tg.scrollIntoView({behavior:'smooth',block:'center'}); tg.classList.add('pl-flash'); setTimeout(()=>tg.classList.remove('pl-flash'),1600); }; }
+  if(arb){ if(!tg) arb.style.display='none'; else arb.onclick=()=>{ const tb=card.querySelector('.pl-tab[data-l="ar"]'); if(tb) tb.click(); const tx=card.querySelector('.pl-tabs')||tg; tx.scrollIntoView({behavior:'smooth',block:'center'}); tg.classList.add('pl-flash'); setTimeout(()=>tg.classList.remove('pl-flash'),1600); }; }
   const tr=card.querySelector('.pl-track');
   if(tr){ let drag=false; const at=ev=>{ const r=tr.getBoundingClientRect(); const p=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)); const d=(A._id===id&&A.duration&&isFinite(A.duration))?A.duration:(card._dur||0); if(!d) return; unlocked=true; seekTo(card,id,p*d); };
     tr.onpointerdown=ev=>{ drag=true; try{ tr.setPointerCapture(ev.pointerId); }catch(e){} at(ev); ev.preventDefault(); };
@@ -187,7 +198,7 @@ function render0(){
   }
   h+='</div>';
   root.innerHTML=h; back=false;
-  const card=document.getElementById('plc'); wireAudio(card,s.a);
+  const card=document.getElementById('plc'); try{ setupTabs(card); }catch(e){} wireAudio(card,s.a);
   document.getElementById('plmute').onclick=()=>{ const q=st(); q.mute=soundOn(); save(q); if(q.mute) stopAudio(); else { ac(); sfx('click'); } document.getElementById('plmute').textContent=soundOn()?'🔊':'🔇'; };
   if(s.t==='section'&&!back&&idx>0) sfx('power');
   if(s.t==='learn'&&unlocked) playClip(s.a,card);
