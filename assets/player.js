@@ -87,8 +87,7 @@ function playClip(id,card){
   A.onplay=()=>{ clearErr(card); if(card) card.classList.add('playing'); if(btn) btn.textContent='⏸'; };
   A.onpause=()=>{ if(card) card.classList.remove('playing'); if(btn) btn.textContent='▶'; };
   A.onended=()=>{ if(card) card.classList.remove('playing'); if(btn) btn.textContent='▶'; };
-  const bar=card&&card.querySelector('.pl-wave i');
-  A.ontimeupdate=()=>{ if(bar&&A.duration) bar.style.width=(A.currentTime/A.duration*100)+'%'; };
+  A.ontimeupdate=()=>uiTime(card); A.onloadedmetadata=()=>uiTime(card); A.ondurationchange=()=>uiTime(card);
   A.onerror=()=>{ if(failed) return; failed=true; playWA(id,card); };
   const pr=A.play();
   if(pr&&pr.catch) pr.catch(er=>{
@@ -98,10 +97,30 @@ function playClip(id,card){
 }
 function audioBox(id){
   if(!hasClip(id)) return '';
-  return '<div class="pl-audio"><button class="pl-play" aria-label="تشغيل">▶</button><div class="pl-wave"><i></i></div><button class="pl-spd">'+(speed===1?'1':speed)+'×</button></div>';
+  return '<div class="pl-audio pl-yt"><div class="pl-row"><button class="pl-skip" data-d="-5" aria-label="رجوع ٥ ثواني">⏪ 5</button><button class="pl-play" aria-label="تشغيل">▶</button><button class="pl-skip" data-d="5" aria-label="تقدّم ٥ ثواني">5 ⏩</button><button class="pl-spd">'+(speed===1?'1':speed)+'×</button><button class="pl-ar" aria-label="روح للنص العربي">عربي ⬇</button></div><div class="pl-seekrow"><span class="pl-t pl-cur">0:00</span><div class="pl-wave pl-track" role="slider" aria-label="شريط الصوت" tabindex="0"><i></i><b class="pl-knob"></b></div><span class="pl-t pl-dur">--:--</span></div></div>';
 }
+function fmtT(t){ if(!isFinite(t)||t<0) return '--:--'; t=Math.floor(t); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
+function uiTime(card){ if(!card) return; const id=card._aid; const live=A._id===id&&A.duration&&isFinite(A.duration); const d=live?A.duration:(card._dur||0); const c=live?A.currentTime:0;
+  const bar=card.querySelector('.pl-wave i'), kn=card.querySelector('.pl-knob'), ce=card.querySelector('.pl-cur'), de=card.querySelector('.pl-dur'); const p=d?Math.min(100,c/d*100):0;
+  if(bar) bar.style.width=p+'%'; if(kn) kn.style.left=p+'%'; if(ce) ce.textContent=fmtT(c); if(de) de.textContent=d?fmtT(d):'--:--'; }
+function seekTo(card,id,t){ const live=A._id===id&&A.src;
+  if(live){ try{ A.currentTime=Math.max(0,Math.min(t,(A.duration&&isFinite(A.duration))?A.duration-0.05:t)); }catch(e){} uiTime(card); }
+  else { playClip(id,card); A.addEventListener('loadedmetadata',function(){ try{ A.currentTime=Math.max(0,t); }catch(e){} },{once:true}); } }
+function arTarget(card){ const box=card.querySelector('.pl-text'); if(!box) return null;
+  const sel='.u,.lead,.li,p,li,div'; const all=[...box.querySelectorAll(sel)].filter(e=>!e.querySelector(sel)&&e.textContent.trim().length>2);
+  const isAr=e=>{ const t=e.textContent; const a=(t.match(/[\u0600-\u06FF]/g)||[]).length, l=(t.match(/[A-Za-z]/g)||[]).length; return a>l; };
+  let seenEn=false; for(const e of all){ if(!isAr(e)) seenEn=true; else if(seenEn) return e; } return null; }
 function wireAudio(card,id){
-  const b=card.querySelector('.pl-play'); if(!b) return; const card0=card;
+  const b=card.querySelector('.pl-play'); if(!b) return; const card0=card; card._aid=id;
+  try{ const pd=new Audio(); pd.preload='metadata'; pd.src=clipUrl(id); pd.onloadedmetadata=()=>{ if(isFinite(pd.duration)){ card._dur=pd.duration; uiTime(card); } }; }catch(e){}
+  card.querySelectorAll('.pl-skip').forEach(k=>{ k.onclick=()=>{ unlocked=true; const base=(A._id===id)?A.currentTime:0; seekTo(card,id,base+(+k.dataset.d)); }; });
+  const arb=card.querySelector('.pl-ar'); const tg=arTarget(card);
+  if(arb){ if(!tg) arb.style.display='none'; else arb.onclick=()=>{ tg.scrollIntoView({behavior:'smooth',block:'center'}); tg.classList.add('pl-flash'); setTimeout(()=>tg.classList.remove('pl-flash'),1600); }; }
+  const tr=card.querySelector('.pl-track');
+  if(tr){ let drag=false; const at=ev=>{ const r=tr.getBoundingClientRect(); const p=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)); const d=(A._id===id&&A.duration&&isFinite(A.duration))?A.duration:(card._dur||0); if(!d) return; unlocked=true; seekTo(card,id,p*d); };
+    tr.onpointerdown=ev=>{ drag=true; try{ tr.setPointerCapture(ev.pointerId); }catch(e){} at(ev); ev.preventDefault(); };
+    tr.onpointermove=ev=>{ if(drag) at(ev); }; tr.onpointerup=tr.onpointercancel=()=>{ drag=false; };
+    tr.onkeydown=ev=>{ if(ev.key==='ArrowLeft'||ev.key==='ArrowRight'){ const base=(A._id===id)?A.currentTime:0; seekTo(card,id,base+(ev.key==='ArrowRight'?5:-5)); ev.preventDefault(); } }; }
   const sp=card.querySelector('.pl-spd');
   sp.onclick=()=>{ speed=speed===1?0.8:speed===0.8?1.25:1; sp.textContent=(speed===1?'1':speed)+'×'; A.playbackRate=speed; };
   b.onclick=()=>{ unlocked=true; ac(); if((!A.paused&&!A.ended&&A._id===id)||cur){ stopWA(); A.pause(); if(card0) card0.classList.remove('playing'); b.textContent='▶'; } else { const s0=st(); if(s0.mute){ s0.mute=false; save(s0); } playClip(id,card); } };
