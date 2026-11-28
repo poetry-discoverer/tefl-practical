@@ -178,7 +178,8 @@ function wireBar(){ const bar=document.querySelector('.pl-top .pl-bar'), cnt=doc
   bar.onkeydown=ev=>{ const d=(ev.key==='ArrowRight'||ev.key==='ArrowUp')?1:(ev.key==='ArrowLeft'||ev.key==='ArrowDown')?-1:0; if(d){ go(Math.max(0,Math.min(S.length-1,idx+d))); ev.preventDefault(); } };
   cnt.style.cursor='pointer'; cnt.onclick=()=>{ const v=prompt('اكتب رقم الكارت (1 - '+S.length+')',idx+1); const n=parseInt(String(v||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)),10); if(n>=1&&n<=S.length) go(n-1); };
 }
-function render(){ render0(); try{ addRev(); }catch(e){} try{ wireBar(); }catch(e){} }
+function lcAward(){ const cur=S[idx]; if(PEEK||!cur||cur.t!=='learn') return; const q=st(); q.sx=q.sx||{}; const k=LID+':lc:'+idx; if(q.sx[k]) return; q.sx[k]=1; const n=(q.sx[LID+':lcn']||0)+1; q.sx[LID+':lcn']=n; save(q); if(n%4===0) xp(10,'📖'); }
+function render(){ render0(); try{ lcAward(); }catch(e){} try{ addRev(); }catch(e){} try{ wireBar(); }catch(e){} }
 function addRev(){ const cur=S[idx]; if(cur&&cur.t==='learn'&&idx>0&&document.getElementById('plc')){ const r=document.createElement('button'); r.className='pl-btn2'; r.type='button'; r.id='plrestart'; r.style.cssText='margin:10px auto 0;display:block'; r.textContent='🔁 أعيد الدرس من الأول'; r.onclick=()=>{ idx=0; back=false; render(); window.scrollTo(0,0); }; document.getElementById('plc').appendChild(r); return; } if(!cur||['mc','tf','recall','write'].indexOf(cur.t)<0||!document.getElementById('plc')) return;
   const b=document.createElement('button'); b.className='pl-btn2'; b.id='plrev'; b.type='button'; b.style.cssText='margin:10px auto 0;display:block'; b.textContent='📖 ارجع لنص الدرس';
   const host=document.getElementById('plc'); host.appendChild(b);

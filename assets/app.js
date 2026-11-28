@@ -183,7 +183,7 @@ return C})();
 })();
 
 ;(function(){
-var TG=50,last=0;
+var TG=100,last=0;
 var Q=[
 ["A journey of a thousand miles begins with a single step.","رحلة الألف ميل بتبدأ بخطوة واحدة.","Lao Tzu"],
 ["Genius is one per cent inspiration, ninety-nine per cent perspiration.","العبقرية واحد في المية إلهام وتسعة وتسعين في المية عرق وشغل.","Thomas Edison"],
