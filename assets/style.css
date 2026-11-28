@@ -220,3 +220,6 @@ a,a:visited,a:hover,a:focus{color:#0b6fa8}
 
 /* narrow-phone header v2: title on its own full row above the stat/sound buttons, never clipped */
 @media(max-width:480px){.topbar .wrap{flex-wrap:wrap!important;row-gap:6px!important}.topbar .logo{flex:1 1 100%!important;order:0!important;white-space:normal!important;min-width:0;max-width:100%;font-size:.95rem!important;line-height:1.3}.topbar .wrap>.stats,.stats{flex:1 1 100%!important;order:1!important;justify-content:flex-start}}
+
+/* bidi-chip-fix: inline English runs are chips, not the block translation style */
+span.en{font-size:inherit;line-height:inherit;color:inherit;border:0;border-radius:6px;padding:0 5px;margin:0 1px;background:#eef7fd;text-align:inherit;font-family:'Nunito','Thmanyah Sans','Noto Color Emoji',sans-serif;direction:ltr;unicode-bidi:isolate}
