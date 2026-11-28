@@ -120,7 +120,9 @@ function setupTabs(card){ const box=card&&card.querySelector('.pl-text'); if(!bo
   const apply=l=>{ bl.forEach(e=>e.classList.toggle('pl-hid',e.dataset.l!==l)); bar.querySelectorAll('.pl-tab').forEach(b=>b.classList.toggle('on',b.dataset.l===l)); };
   let init=(()=>{ try{ return localStorage.getItem('pltab'); }catch(e){ return null; } })(); if(init!=='ar'&&init!=='en') init=bl[0].dataset.l;
   apply(init);
-  bar.querySelectorAll('.pl-tab').forEach(b=>{ b.onclick=()=>{ apply(b.dataset.l); try{ localStorage.setItem('pltab',b.dataset.l); }catch(e){} }; }); }
+  bar.querySelectorAll('.pl-tab').forEach(b=>{ b.onclick=()=>{ apply(b.dataset.l); try{ localStorage.setItem('pltab',b.dataset.l); }catch(e){} langSeek(card,b.dataset.l); }; }); }
+/*pl-lm*/ let LM=null; try{ const sc=[...document.scripts].find(x=>/player\.js/.test(x.src)); const u=sc?sc.src.replace(/player\.js.*$/,'langmap.json'):'../assets/langmap.json'; fetch(u).then(r=>r.ok?r.json():null).then(j=>{ LM=j; }).catch(()=>{}); }catch(e){}
+function langSeek(card,l){ try{ const id=card._aid; const e=LM&&LM[id]; if(!e) return; const t=(l===e[0])?0:e[1]; unlocked=true; seekTo(card,id,t); }catch(x){} }
 function wireAudio(card,id){
   const b=card.querySelector('.pl-play'); if(!b) return; const card0=card; card._aid=id;
   try{ const pd=new Audio(); pd.preload='metadata'; pd.src=clipUrl(id); pd.onloadedmetadata=()=>{ if(isFinite(pd.duration)){ card._dur=pd.duration; uiTime(card); } }; }catch(e){}
