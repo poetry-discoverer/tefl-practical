@@ -214,6 +214,6 @@ window.PRAISE=function(p,s){
  var ke=JSON.stringify(s.exams||{})!==JSON.stringify(p.exams||{})&&Object.keys(s.exams||{}).length>=Object.keys(p.exams||{}).length&&Object.keys(s.exams||{}).length>0;
  var km=Math.floor((s.xp||0)/TG)>Math.floor((p.xp||0)/TG)&&(s.xp||0)>(p.xp||0);
  if(kd)show('lesson');else if(ke)show('exam');else if(km)show('points',Math.floor(s.xp/TG)*TG);}catch(e){}};
-function r(){tgt(st().xp)}
+function r(){tgt(st().xp);if(/[?&]praisedemo/.test(location.search))setTimeout(function(){show('points',100)},1200)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',r);else r();
 })();
