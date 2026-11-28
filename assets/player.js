@@ -84,10 +84,10 @@ function playClip(id,card){
   A.onplay=A.onpause=A.onended=A.ontimeupdate=A.onerror=null;
   const btn=card&&card.querySelector('.pl-play'); let failed=false;
   A.src=clipUrl(id); A._id=id; A.playbackRate=speed;
-  A.onplay=()=>{ clearErr(card); if(card) card.classList.add('playing'); if(btn) btn.textContent='⏸'; };
+  A.onplay=()=>{ if(card&&A.currentTime<0.3) card._man=false; if(card) card._cur=null; autoTab(card); clearErr(card); if(card) card.classList.add('playing'); if(btn) btn.textContent='⏸'; };
   A.onpause=()=>{ if(card) card.classList.remove('playing'); if(btn) btn.textContent='▶'; };
   A.onended=()=>{ if(card) card.classList.remove('playing'); if(btn) btn.textContent='▶'; };
-  A.ontimeupdate=()=>uiTime(card); A.onloadedmetadata=()=>uiTime(card); A.ondurationchange=()=>uiTime(card);
+  A.ontimeupdate=()=>{ uiTime(card); autoTab(card); }; A.onloadedmetadata=()=>uiTime(card); A.ondurationchange=()=>uiTime(card);
   A.onerror=()=>{ if(failed) return; failed=true; playWA(id,card); };
   const pr=A.play();
   if(pr&&pr.catch) pr.catch(er=>{
@@ -118,10 +118,11 @@ function setupTabs(card){ const box=card&&card.querySelector('.pl-text'); if(!bo
   const bar=document.createElement('div'); bar.className='pl-tabs'; bar.innerHTML='<button type="button" class="pl-tab" data-l="en">English</button><button type="button" class="pl-tab" data-l="ar">عربي</button>';
   box.parentNode.insertBefore(bar,box);
   const apply=l=>{ bl.forEach(e=>e.classList.toggle('pl-hid',e.dataset.l!==l)); bar.querySelectorAll('.pl-tab').forEach(b=>b.classList.toggle('on',b.dataset.l===l)); };
-  let init=(()=>{ try{ return localStorage.getItem('pltab'); }catch(e){ return null; } })(); if(init!=='ar'&&init!=='en') init=bl[0].dataset.l;
-  apply(init);
-  bar.querySelectorAll('.pl-tab').forEach(b=>{ b.onclick=()=>{ apply(b.dataset.l); try{ localStorage.setItem('pltab',b.dataset.l); }catch(e){} langSeek(card,b.dataset.l); }; }); }
+  let init=bl[0].dataset.l;
+  apply(init); card._apply=apply;
+  bar.querySelectorAll('.pl-tab').forEach(b=>{ b.onclick=()=>{ card._man=true; apply(b.dataset.l); try{ localStorage.setItem('pltab',b.dataset.l); }catch(e){} langSeek(card,b.dataset.l); }; }); }
 /*pl-lm*/ let LM=null; try{ const sc=[...document.scripts].find(x=>/player\.js/.test(x.src)); const u=sc?sc.src.replace(/player\.js.*$/,'langmap.json'):'../assets/langmap.json'; fetch(u).then(r=>r.ok?r.json():null).then(j=>{ LM=j; }).catch(()=>{}); }catch(e){}
+function autoTab(card){ try{ if(!card||card._man||!card._apply||!LM||A._id!==card._aid) return; const e=LM[card._aid]; if(!e) return; const other=e[0]==='en'?'ar':'en'; const l=(A.currentTime<e[1]-0.05)?e[0]:other; if(card._cur!==l){ card._cur=l; card._apply(l); } }catch(x){} }
 function langSeek(card,l){ try{ const id=card._aid; const e=LM&&LM[id]; if(!e) return; const t=(l===e[0])?0:e[1]; unlocked=true; seekTo(card,id,t); }catch(x){} }
 function wireAudio(card,id){
   const b=card.querySelector('.pl-play'); if(!b) return; const card0=card; card._aid=id;
