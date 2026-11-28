@@ -97,7 +97,7 @@ function playClip(id,card){
 }
 function audioBox(id){
   if(!hasClip(id)) return '';
-  return '<div class="pl-audio pl-yt"><div class="pl-row"><button class="pl-skip" data-d="-5" aria-label="رجوع ٥ ثواني">⏪ 5</button><button class="pl-skip" data-d="-3" aria-label="رجوع ٣ ثواني">⏪ 3</button><button class="pl-play" aria-label="تشغيل">▶</button><button class="pl-skip" data-d="3" aria-label="تقدّم ٣ ثواني">3 ⏩</button><button class="pl-skip" data-d="5" aria-label="تقدّم ٥ ثواني">5 ⏩</button><button class="pl-spd">'+(speed===1?'1':speed)+'×</button><button class="pl-ar" aria-label="روح للنص العربي">عربي ⬇</button></div><div class="pl-seekrow"><span class="pl-t pl-cur">0:00</span><div class="pl-wave pl-track" role="slider" aria-label="شريط الصوت" tabindex="0"><i></i><b class="pl-knob"></b></div><span class="pl-t pl-dur">--:--</span></div></div>';
+  return '<div class="pl-audio pl-yt"><div class="pl-row"><button class="pl-skip" data-d="-3" aria-label="رجوع ٣ ثواني">⏪ 3</button><button class="pl-play" aria-label="تشغيل">▶</button><button class="pl-skip" data-d="3" aria-label="تقدّم ٣ ثواني">3 ⏩</button><span class="pl-spds">'+[0.5,0.8,1,2].map(v=>'<button class="pl-spd'+(speed===v?' on':'')+'" data-s="'+v+'">'+v+'×</button>').join('')+'</span><button class="pl-ar" aria-label="روح للنص العربي">عربي ⬇</button></div><div class="pl-seekrow"><span class="pl-t pl-cur">0:00</span><div class="pl-wave pl-track" role="slider" aria-label="شريط الصوت" tabindex="0"><i></i><b class="pl-knob"></b></div><span class="pl-t pl-dur">--:--</span></div></div>';
 }
 function fmtT(t){ if(!isFinite(t)||t<0) return '--:--'; t=Math.floor(t); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
 function uiTime(card){ if(!card) return; const id=card._aid; const live=A._id===id&&A.duration&&isFinite(A.duration); const d=live?A.duration:(card._dur||0); const c=live?A.currentTime:0;
@@ -134,8 +134,7 @@ function wireAudio(card,id){
     tr.onpointerdown=ev=>{ drag=true; try{ tr.setPointerCapture(ev.pointerId); }catch(e){} at(ev); ev.preventDefault(); };
     tr.onpointermove=ev=>{ if(drag) at(ev); }; tr.onpointerup=tr.onpointercancel=()=>{ drag=false; };
     tr.onkeydown=ev=>{ if(ev.key==='ArrowLeft'||ev.key==='ArrowRight'){ const base=(A._id===id)?A.currentTime:0; seekTo(card,id,base+(ev.key==='ArrowRight'?5:-5)); ev.preventDefault(); } }; }
-  const sp=card.querySelector('.pl-spd');
-  sp.onclick=()=>{ speed=speed===1?0.8:speed===0.8?1.25:1; sp.textContent=(speed===1?'1':speed)+'×'; A.playbackRate=speed; };
+  card.querySelectorAll('.pl-spd').forEach(sp=>{ sp.onclick=()=>{ speed=+sp.dataset.s; A.playbackRate=speed; card.querySelectorAll('.pl-spd').forEach(x=>x.classList.toggle('on',+x.dataset.s===speed)); }; });
   b.onclick=()=>{ unlocked=true; ac(); if((!A.paused&&!A.ended&&A._id===id)||cur){ stopWA(); A.pause(); if(card0) card0.classList.remove('playing'); b.textContent='▶'; } else { const s0=st(); if(s0.mute){ s0.mute=false; save(s0); } playClip(id,card); } };
   // preload next clips (warm the cache)
   let n=0; for(let j=idx+1;j<S.length&&n<2;j++){ if(hasClip(S[j].a)){ if(!/^data:/.test(M.audio[S[j].a])){ const p=new Audio(clipUrl(S[j].a)); p.preload='auto'; } else clipUrl(S[j].a); n++; } }

@@ -100,3 +100,7 @@
 .pl-tab.on{border-color:#1cb0f6;background:#eaf7ff;color:#0b6fa8;box-shadow:0 3px 0 #1899d6}
 .pl-hid{display:none!important}
 .pl-yt .pl-skip{padding:10px 9px;font-size:14px}
+
+.pl-spds{display:flex;gap:6px;direction:ltr;width:100%;justify-content:center;margin-top:8px}
+.pl-spds .pl-spd{flex:1;max-width:72px;padding:7px 4px;font-size:14px}
+.pl-spds .pl-spd.on{border-color:#1cb0f6;background:#eaf7ff;color:#0b6fa8}
